@@ -12,6 +12,7 @@ const log  = (...v)  => console.log( ...v )
 // https://github.com/oliexdev/openScale/blob/master/android_app/app/src/main/java/com/health/openscale/core/bluetooth/lib/MiScaleLib.java
 // https://github.com/Freeyourgadget/Gadgetbridge/blob/master/app/src/main/java/nodomain/freeyourgadget/gadgetbridge/service/devices/miscale2/MiScale2DeviceSupport.java
 // https://gist.github.com/sam016/4abe921b5a9ee27f67b3686910293026
+// serviceData[1] reference
 // 7:'Without weight', 6:'Invalid Date', 5:'Got Weight', 4:'Jin Unit', 3:'unknown', 2:'unknown', 1:'Got Composition', 0:'unknown' }
 var devScan, miUser={}
 var users = { guillermo:{ name:'Guillermo', sex:"Male", age:40, height:184 } }
@@ -149,23 +150,24 @@ function getCompositionNew( user ) {
   add('BMI').link = 'https://en.wikipedia.org/wiki/Body_mass_index'
   add('BMR').description = `Metabolism comprises the processes that the body needs to function.Basal metabolic rate is the amount of energy per unit of time that a person needs to keep the body functioning at rest. Some of those processes are breathing, blood circulation, controlling body temperature, cell growth, brain and nerve function, and contraction of muscles. Basal metabolic rate (BMR) affects the rate that a person burns calories and ultimately whether that individual maintains, gains, or loses weight. The basal metabolic rate accounts for about 60 to 75% of the daily calorie expenditure by individuals.`
   add('BMR').link = 'https://en.wikipedia.org/wiki/Basal_metabolic_rate'
+  add('Water').description = `Body water is the water content of an animal body that is contained in the tissues, the blood, the bones and elsewhere. The percentages of body water contained in various fluid compartments add up to total body water (TBW)`
+  add('Water').link = 'https://en.wikipedia.org/wiki/Body_water'
   add('VisceralFat').description = `Visceral fat or abdominal fat (also known as organ fat or intra-abdominal fat) is located inside the abdominal cavity, packed between the organs (stomach, liver, intestines, kidneys, etc.).`
   add('VisceralFat').link = 'https://en.wikipedia.org/wiki/Abdominal_obesity'
   add('BodyFat').description = `It is actually adipose tissue; its main function is to store energy in the form of lipids, but it cushions and insulates your body, too. Your body stores two types of fat: essential and storage body fat.`
   add('BodyFat').link = 'https://en.wikipedia.org/wiki/Body_fat_percentage'
   add('BoneMass').description = `Bone mass estimates the weight of the bones in your body.`
   add('BoneMass').link = 'https://en.wikipedia.org/wiki/Bone_density'
-  add('Water').description = `Body water is the water content of an animal body that is contained in the tissues, the blood, the bones and elsewhere. The percentages of body water contained in various fluid compartments add up to total body water (TBW)`
-  add('Water').link = 'https://en.wikipedia.org/wiki/Body_water'
-  add('').description = '
-  add('').link = '
-  add('').description = '
-  add('').link = '
-  add('').description = '
-  add('').link = '
-  add('').description = '
-  add('').link = '
-  add('').description = '
+  add('MuscleMass').description = `The total mass of body skeletal muscle. The body has three types of muscles: skeletal, smooth, and cardiac. Skeletal muscle is under voluntary control (think biceps), smooth muscle contracts autonomously (or without any thought), and cardiac muscle makes up the main tissue of the heart's walls.`
+  add('MuscleMass').link = 'https://www.menshealth.com/health/a27242669/what-your-body-composition-metrics-say-about-your-health/'
+  add('Ideal').description = `The calculation of ideal body weight is based on what is the optimal BMI in relation to the likelihood of a long life with the least diseases. Recent large studies indicate that the lowest mortality actually occurs at BMI values ​​close to overweight.`
+  add('Ideal').link = 'https://www.health-calc.com/body-composition/ideal-body-weight'
+  add('Protein').description = 'Proteins are essential nutrients for the human body. They are one of the building blocks of body tissue and can also serve as a fuel source.'
+  add('Protein').link = 'https://en.wikipedia.org/wiki/Protein_(nutrient)'
+  add('BodyType').description = `The Physique rating assesses muscle and body fat levels. It rates the result as one of nine body types. The Physique rating gives an indication of what type of body you have.`
+  add('BodyType').link = 'https://tanita.eu/help-guides/understanding-your-measurements/physique-rating/'
+  add('MetabolicAge').description = `Chronological age is one way to gauge your fitness level compared to your peers`
+  add('MetabolicAge').link = 'https://www.healthline.com/health/exercise-fitness/metabolic-age'
   return calc
 }
 

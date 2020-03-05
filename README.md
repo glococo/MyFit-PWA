@@ -21,8 +21,8 @@ You must be using Chrome 79+ with the chrome://flags/#enable-experimental-web-pl
 - Desktop: Chrome 79+ with the chrome://flags/#enable-experimental-web-platform-features flag enabled
 - Mobile: Chrome 79+ with the chrome://flags/#enable-experimental-web-platform-features flag enabled
 
-- Opera Mobile 56 Support navigator.bluetooth.requestDevice only. requestLEScan not available right now.
-- Opera Desktop till v67 do not support navigator.bluetooth at all
+- Opera Mobile 57 with the chrome://flags/#enable-experimental-web-platform-features flag enabled
+- Opera Desktop 68 with the opera://flags/#enable-experimental-web-platform-features flag enabled
 
 - Edge Mobile 45 support navigator.bluetooth.requestDevice only. requestLEScan not available right now.
 
@@ -46,6 +46,7 @@ You must be using Chrome 79+ with the chrome://flags/#enable-experimental-web-pl
 
 ## Requirements
 * Updated Chrome Browser
+* Updated Opera Browser
 
 ## How to use in your site
 git clone https://github.com/glococo/MyFit-PWA.git
