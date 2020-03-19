@@ -1,0 +1,73 @@
+html, body { height: 100% }
+body {
+  font-family: Ubuntu;
+  touch-action: none;
+  margin: 0;
+  display: grid;
+  grid-template: 6vh auto 6vh min-content / 1fr;
+}
+.gNameBar {
+  grid-template: 1/1/2/2;
+  text-align: center;
+  font-weight: bold;
+  font-size: 4vh;
+  height: 6vh;
+  /*border: 1px solid #888;*/
+}
+
+.gBackground { background: linear-gradient( #FFF, #FFF, #DDD ); height:100%; z-index:-1; }
+.gMain { grid-area:2/1/3/2; text-align: center; align-self: center; }
+
+/*.gLoading { z-index: 10; }*/
+.gWeight {
+  font-weight: bold;
+  font-size: 30vw;
+  color: #363637;
+}
+.gWeight div {
+  font-weight: bold;
+  font-size: 5vh;
+}
+
+.gGoal {
+  grid-area:3/1/4/2;
+  color: #FFF;
+  background: #292525;
+  font-weight: bold;
+  font-size: 4vh;
+  height: 6vh;
+  text-align: center;
+}
+.gResults {
+  grid-area:4/1/5/2;
+  background: #FFF;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-gap: 0px;
+  text-align: center;
+  /*border: 1px #777;*/
+}
+
+.gResults div {
+  border: 1px solid #DDD;
+  background-color: #FFF8;
+}
+
+.loadAni { display: inline-flex; flex-direction: row; }
+.loadAni div { height: 20vh; width: 3vw; background: #FE4A49; margin: 2vw; border-radius: 15px; }
+.loadAni div:nth-child(1) { animation: lAni 1s ease-in-out infinite 0s; }
+.loadAni div:nth-child(2) { animation: lAni 1s ease-in-out infinite 0.1s; }
+.loadAni div:nth-child(3) { animation: lAni 1s ease-in-out infinite 0.2s; }
+.loadAni div:nth-child(4) { animation: lAni 1s ease-in-out infinite 0.3s; }
+.loadAni div:nth-child(5) { animation: lAni 1s ease-in-out infinite 0.4s; }
+.loadAni div:nth-child(6) { animation: lAni 1s ease-in-out infinite 0.5s; }
+.loadAni div:nth-child(7) { animation: lAni 1s ease-in-out infinite 0.6s; }
+.loadAni div:nth-child(8) { animation: lAni 1s ease-in-out infinite 0.7s; }
+
+@keyframes lAni {
+  0% { transform: scaleY(0.5); background: #FED766; }
+ 25% { background: #009FB7; }
+ 50% { transform: scaleY(2); background: #59CD90; }
+ 75% { background: #FE4A49; }
+100% { transform: scaleY(0.5); background: #D91E36; }
+}

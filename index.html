@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>My Fit PWA - Advanced Web Bluetooth</title>
+    <link rel="manifest" href="/manifest.json">
+    <link rel="icon" href="homescreen48.png">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css">
+    <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Ubuntu&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="index.css">
+    <script src="code.js"></script>
+  </head>
+<body>
+
+  <div class="gNameBar"> _ Guillermo Lo Coco _ </div>
+  <div class="gMain gInit"> Wellcome to MyFit Web App
+                            <br><br>
+                            Make sure you have Bluetooth and Location enabled
+                            <br><br><br>
+                            <a class="button" onClick="launchBLEScan()">Connect to Scale</a> </div>
+  <div class="gMain gBackground"></div>
+  <div class="gMain gLoading">
+    <div class="loadAni">
+          <div></div><div></div><div></div><div></div>
+          <div></div><div></div><div></div><div></div>
+    </div>
+  </div>
+  <div class="gMain gWeight">80 <div>kg</div></div>
+  <div class="gGoal">Your Goal is 76 kg</div>
+  <div class="gResults" style="display:none">
+ </div>
+
+</body>
+</html>

@@ -1,61 +1,87 @@
 'use strict'
 
-const  $= _=> document.getElementById(_)
-const $$= _=> document.getElementsByClassName(_)
+const  $= _=> document.querySelector(_)
+const $$= _=> document.querySelectorAll(_)
 const log  = (...v)  => console.log( ...v )
 
-// MIBCS: Mi Body Composite Scale.
-// Reference sites
-// https://github.com/wiecosystem/Bluetooth/blob/master/doc/devices/huami.health.scale2.md
-// https://github.com/oliexdev/openScale/wiki/Xiaomi-Bluetooth-Mi-Scale
-// https://github.com/oliexdev/openScale/blob/master/android_app/app/src/main/java/com/health/openscale/core/bluetooth/BluetoothMiScale2.java
-// https://github.com/oliexdev/openScale/blob/master/android_app/app/src/main/java/com/health/openscale/core/bluetooth/lib/MiScaleLib.java
-// https://github.com/Freeyourgadget/Gadgetbridge/blob/master/app/src/main/java/nodomain/freeyourgadget/gadgetbridge/service/devices/miscale2/MiScale2DeviceSupport.java
-// https://gist.github.com/sam016/4abe921b5a9ee27f67b3686910293026
-// serviceData[1] reference
-// 7:'Without weight', 6:'Invalid Date', 5:'Got Weight', 4:'Jin Unit', 3:'unknown', 2:'unknown', 1:'Got Composition', 0:'unknown' }
-var devScan, miUser={}
-var users = { guillermo:{ name:'Guillermo', sex:"Male", age:40, height:184 } }
+var devScan, miUser={}, drawn={ weight:false, composition:false }
+var users = { guillermo:{ name:'Guillermo', sex:"Male", age:40, height:184, impedance:null, weight:null } }
 
 // Do a console test: run-> getCompositionNew( users.__yourdata__ )
 // getCompositionNew( users.guillermo )
 
+window.addEventListener('DOMContentLoaded', init )
+
+const noBleSupport= _=>{ $('.gInit').innerHTML=`Sorry.<br>Your browser do not support requestLEScan API.<br>Check your browser flags.`; showMain('.gInit') }
+const noBleAdapter= _=>{ $('.gInit').innerHTML=`Sorry.<br>There seems to be no Bt LE adapter, you dont have BT or Location enabled or denied access to Web API.`; showMain('.gInit') }
+
+function drawWeight(weight){
+  if( drawn.weight ) return
+  $('.gWeight').innerHTML=`${weight} <div>kg</div>`
+}
+function drawComposition( miUser ) {
+  if( drawn.composition ) return
+  drawn.composition= true
+  let inner= ''
+  miUser.composition.forEach( data=> inner+= `<div> ${data.short} <br> ${data.value} ${data.unit?data.unit:''} </div>` )
+  $('.gResults').innerHTML= inner
+  $('.gResults').style.display= 'grid'
+  log( `Peso: ${miUser.weight}, Impedance: ${miUser.impedance}, Date: ${miUser.date}, Composition: `, miUser.composition )
+}
+function showMain( theClass ) {
+  $$('.gMain').forEach( e=> e.style.display='none' )
+  $('.gBackground').style.display='block'
+  $( theClass ).style.display='block'
+}
 function init() {
-  if( !navigator.bluetooth || !navigator.bluetooth.requestLEScan )
-    return alert('Your browser do not support requestLEScan API.\nCheck your browser flags')
-  navigator.bluetooth.addEventListener('advertisementreceived', btEvent )
+  showMain( '.gInit' )
+  if( !navigator.bluetooth || !navigator.bluetooth.requestLEScan )  return noBleSupport()
+  navigator.bluetooth.addEventListener('advertisementreceived', e=> mibcsEvent(e) )
+}
+function launchBLEScan(){
   btScan( users.guillermo )
 }
 
 function btScan(user) {
+  showMain( '.gLoading' )
   if( !user || !user.sex || !user.age || !user.height ) return log("no user")
   miUser = user
-  devScan = navigator.bluetooth.requestLEScan({ filters:[{name:'MIBCS'}] })
+  devScan = navigator.bluetooth.requestLEScan({ filters:[{name:'MIBCS'}] }).catch( e=> noBleAdapter() )
 }
 
-function btEvent( event ){
+// MIBCS: Mi Body Composite Scale. serviceData[1] byte reference
+// [ 7:'Without weight', 6:'Invalid Date', 5:'Got Weight', 4:'Jin Unit', 3:'unknown', 2:'unknown', 1:'Got Composition', 0:'unknown' ]
+// ServiceData sample: [2, 164, 228, 7, 2, 14, 11, 0, 55, 253, 255, 40, 20]
+function mibcsEvent( event ){
     if( event.name!='MIBCS' ) return
-    // ServiceData sample: [2, 164, 228, 7, 2, 14, 11, 0, 55, 253, 255, 40, 20]
-    let tmp= new Uint8Array( event.serviceData.get('0000181b-0000-1000-8000-00805f9b34fb').buffer )
-    if( (tmp[1] & 0x20) && !miUser.weight ) miUser.weight= ((tmp[12]<<8)+tmp[11])/200
-    if( (tmp[1] & 0x22) ) miUser.impedance= (tmp[10]<<8) + tmp[9]
-    if( miUser.weight ) {
-        miUser.date= ((tmp[3]<<8)+tmp[2]) +"-"+ tmp[4] +"-"+ tmp[5] +" "+ tmp[6] +":"+ tmp[7] +":"+ tmp[8]
-        if( miUser.impedance && miUser.impedance<65000 ) miUser.composition= getCompositionNew( miUser )
+    let sData  = new Uint8Array( event.serviceData.get('0000181b-0000-1000-8000-00805f9b34fb').buffer )
+    if( sData[1]&0x80 ) return
+    showMain( '.gWeight' )
+    let date   = ((sData[3]<<8)+sData[2]) +"-"+ sData[4] +"-"+ sData[5] +" "+ sData[6] +":"+ sData[7] +":"+ sData[8]
+    let weight = ( (sData[12]<<8) + sData[11] ) /200
+    let impedance = (sData[10]<<8) + sData[9]
+    if( !(sData[1]&0x20) )  return drawWeight( weight )
+    if( !miUser.weight )  miUser.weight= weight
+    if( !miUser.date   )  miUser.date  = date
+    drawWeight( weight )
+    drawn.weight= true
+    if( !(sData[1] & 0x22) || impedance>3000 || !impedance ) return
+    if( !miUser.composition) {
+      miUser.impedance  = impedance
+      miUser.composition= getCompositionNew( miUser )
+      drawComposition( miUser )
     }
-    if( !(tmp[1]&0x80) ) console.log( `Status: ${tmp[1]}, Peso: ${miUser.weight}, Impedance: ${miUser.impedance}, Date: ${miUser.date} ,
-                                      (miUser.composition?miUser.composition:[] )` )
 }
 
 function btStop(){
     navigator.bluetooth.removeEventListener('advertisementreceived', btEvent )
     devScan.stop()
-    console.log('Scan status: '+ scan.active)
+    log('Scan status: '+ scan.active)
 }
 
 function getCompositionNew( user ) {
     if( user.weight>200 || user.weight<10 || user.height>220 || user.impedance>3000 )
-        return console.log("Out of boundaries")
+        return log("Out of boundaries")
 
     let lbm = ( user.height * 9.058 / 100) * ( user.height / 100)
         lbm += user.weight * 0.32 + 12.226;
@@ -172,7 +198,7 @@ function getCompositionNew( user ) {
 }
 
 function getFatPercentageScale(sex,age,ref){
-    console.log(sex,age,ref)
+    // log(sex,age,ref)
     let xiaomi = [
                 { min:  0, max: 20, Female: [18, 23, 30, 35], Male: [8, 14, 21, 25]},
                 { min: 21, max: 25, Female: [19, 24, 30, 35], Male: [10, 15, 22, 26]},
@@ -197,3 +223,11 @@ function getBoneMassScale(sex, weight, ref) {
                    {Male: {min:  0.0, scale: [1.6, 3.9]}, Female: {min:  0.0, scale: [1.3, 3.6]}} ]
     return xiaomi.find( e=> e[sex].min<=weight )[sex].scale[ref]
 }*/
+
+// Reference sites
+// https://github.com/wiecosystem/Bluetooth/blob/master/doc/devices/huami.health.scale2.md
+// https://github.com/oliexdev/openScale/wiki/Xiaomi-Bluetooth-Mi-Scale
+// https://github.com/oliexdev/openScale/blob/master/android_app/app/src/main/java/com/health/openscale/core/bluetooth/BluetoothMiScale2.java
+// https://github.com/oliexdev/openScale/blob/master/android_app/app/src/main/java/com/health/openscale/core/bluetooth/lib/MiScaleLib.java
+// https://github.com/Freeyourgadget/Gadgetbridge/blob/master/app/src/main/java/nodomain/freeyourgadget/gadgetbridge/service/devices/miscale2/MiScale2DeviceSupport.java
+// https://gist.github.com/sam016/4abe921b5a9ee27f67b3686910293026
