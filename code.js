@@ -12,8 +12,39 @@ var users = { guillermo:{ name:'Guillermo', sex:"Male", age:40, height:184, impe
 
 window.addEventListener('DOMContentLoaded', init )
 
-const noBleSupport= _=>{ $('.gInit').innerHTML=`Sorry.<br>Your browser do not support requestLEScan API.<br>Check your browser flags.`; showMain('.gInit') }
-const noBleAdapter= _=>{ $('.gInit').innerHTML=`Sorry.<br>There seems to be no Bt LE adapter, you dont have BT or Location enabled or denied access to Web API.`; showMain('.gInit') }
+function addEventListeners(){
+  $('#profile-selector').addEventListener('change', e=>onSelectProfile(e.target.value) )
+  $('#profile a').addEventListener('click', e=>submitProfile() )
+  $('#profile a.is-warning').addEventListener('click', _=>showGlobal('#intro') )
+  $('#profile a.is-danger').addEventListener('click', _=>showGlobal('#intro') )
+}
+function createNewProfile(){
+  showGlobal('#profile')
+  $('#profile [type=text]').value=''
+  $('#profile a.is-warning').classList.add('is-hidden')
+}
+function onSelectProfile( value ){
+    if( value == 'Select profile' || !value ) return
+    if( value == '. . . create new profile' ) return createNewProfile()
+    launchScale( value )
+}
+function populateProfileSelector( profiles ) {
+    let opt= document.createElement('option')
+    opt.text= 'Select profile'
+    $('#profile-selector').length=0
+    $('#profile-selector').add(opt)
+    profiles.forEach( profile=> {
+        let opt= document.createElement('option')
+        opt.text= profile.name
+        $('#profile-selector').add(opt)
+    })
+    opt= document.createElement('option')
+    opt.text= '. . . create new profile'
+    $('#profile-selector').add(opt)
+}
+
+const noBleSupport= _=>{ $('.gInit').innerHTML=`Sorry.<br>Your browser do not support requestLEScan API.<br>Check your browser flags.`; showGlobal('.gInit') }
+const noBleAdapter= _=>{ $('.gInit').innerHTML=`Sorry.<br>There seems to be no Bt LE adapter, you dont have BT or Location enabled or denied access to Web API.`; showGlobal('.gInit') }
 
 function drawWeight(weight){
   if( drawn.weight ) return
@@ -28,13 +59,15 @@ function drawComposition( miUser ) {
   $('.gResults').style.display= 'grid'
   log( `Peso: ${miUser.weight}, Impedance: ${miUser.impedance}, Date: ${miUser.date}, Composition: `, miUser.composition )
 }
-function showMain( theClass ) {
-  $$('.gMain').forEach( e=> e.style.display='none' )
-  $('.gBackground').style.display='block'
-  $( theClass ).style.display='block'
+function showGlobal( theClass ) {
+  $$('.global').forEach( e=> e.classList.add('is-hidden') )
+  $( theClass ).classList.remove('is-hidden')
 }
 function init() {
-  showMain( '.gInit' )
+  addEventListeners()
+  let profiles=[ {name: "Guillermo", sex: "Male", age: 40, height: 184}, {name: "Cecilia", sex: "Female", age: 34, height: 155}, {name: "Vainillo", sex: "Male", age: 24, height: 145} ]
+  populateProfileSelector( profiles )
+  showGlobal( '#sense' )
   if( !navigator.bluetooth || !navigator.bluetooth.requestLEScan )  return noBleSupport()
   navigator.bluetooth.addEventListener('advertisementreceived', e=> mibcsEvent(e) )
 }
@@ -43,7 +76,7 @@ function launchBLEScan(){
 }
 
 function btScan(user) {
-  showMain( '.gLoading' )
+  showGlobal( '.gLoading' )
   if( !user || !user.sex || !user.age || !user.height ) return log("no user")
   miUser = user
   devScan = navigator.bluetooth.requestLEScan({ filters:[{name:'MIBCS'}] }).catch( e=> noBleAdapter() )
@@ -56,7 +89,7 @@ function mibcsEvent( event ){
     if( event.name!='MIBCS' ) return
     let sData  = new Uint8Array( event.serviceData.get('0000181b-0000-1000-8000-00805f9b34fb').buffer )
     if( sData[1]&0x80 ) return
-    showMain( '.gWeight' )
+    showGlobal( '.gWeight' )
     let date   = ((sData[3]<<8)+sData[2]) +"-"+ sData[4] +"-"+ sData[5] +" "+ sData[6] +":"+ sData[7] +":"+ sData[8]
     let weight = ( (sData[12]<<8) + sData[11] ) /200
     let impedance = (sData[10]<<8) + sData[9]

@@ -13,23 +13,57 @@
   </head>
 <body>
 
-  <div class="gNameBar"> _ Guillermo Lo Coco _ </div>
-  <div class="gMain gInit"> Wellcome to MyFit Web App
-                            <br><br>
-                            Make sure you have Bluetooth and Location enabled
-                            <br><br><br>
-                            <a class="button" onClick="launchBLEScan()">Connect to Scale</a> </div>
-  <div class="gMain gBackground"></div>
-  <div class="gMain gLoading">
-    <div class="loadAni">
-          <div></div><div></div><div></div><div></div>
-          <div></div><div></div><div></div><div></div>
+  <div class="global" id="intro">
+    <div>
+      Welcome to My Fit Web App
+      <br><br>
+      <img src="miScale.png" style="height:25vh">
+    </div>
+    <div>
+      <div class="field is-grouped is-grouped-centered">
+        <div class="select is-rounded is-info is-small"> <select id="profile-selector"> </select></div>
+      </div>
     </div>
   </div>
-  <div class="gMain gWeight">80 <div>kg</div></div>
-  <div class="gGoal">Your Goal is 76 kg</div>
-  <div class="gResults" style="display:none">
- </div>
+
+  <div class="global withButtons" id="profile">
+    <div class="wb-Head" id="profile-title">Create a new profile</div>
+    <div class="wb-Main">
+      <div class="field"> <label class="label">Name</label>
+        <div class="control"> <input class="input is-small" type="text" placeholder="Full name"> </div>
+      </div>
+      <div class="field"> <label class="label">Height</label>
+        <div class="control"> <input class="input is-small" type="number" min="50" step="0.1" style="width:140px"> </div>
+      </div>
+      <div class="field"> <label class="label">Birth date</label>    
+        <div class="control"> <input class="input is-small" type="date" style="width:140px"> </div>
+      </div>
+      <div class="control">
+        <label class="radio"> <input type="radio" value="Male">   Male </label>
+        <label class="radio"> <input type="radio" value="Female"> Female </label>
+      </div>
+    </div>
+    <div class="wb-Footer">
+      <a class="button"> Submit </a>
+      <a class="button is-danger"> Cancel </a>
+      <a class="button is-warning is-hidden"> Delete </a>
+    </div>
+  </div>
+
+  <div class="global" id="sense">
+    <div class="wb-Head" id="sense-title">
+        <div> <i class="fas fa-angle-left"></i> </div>
+        <div>Guillermo Lo Coco</div>
+        <div> <i class="fas fa-user-cog"></i> </div>
+    </div>
+    <div class="sMain sBackground"></div>
+    <div class="sMain sLoading is-hidden">
+      <div class="loadAni"> <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>  </div>
+    </div>
+    <div class="sMain sWeight"> </div>
+    <div class="sGoal">41 years old & 183cm height</div>
+    <div class="sResults" style="display:none"> </div>
+  </div>
 
 </body>
 </html>
