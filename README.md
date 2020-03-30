@@ -11,10 +11,10 @@ And also this is a PWA playground for testing new Bluetooth LE API features like
 
 
 There is always room to be improved, like:
-- use fallback method navigator.bluetooth.requestDevice for read last completed measurement
+- use fallback method to read last completed measurement (navigator.bluetooth.requestDevice)
   (this method will not be able to listen BLE broadcast packets)
 - Read Xiaomi Mi Scale 2 measurements history memory
-- Make a multilanguage UI with persistent storage, and so on...
+- Make a multilanguage UI, and so on...
 
 ## Compatibility
 You must be using Chrome 79+ with the chrome://flags/#enable-experimental-web-platform-features flag enabled
@@ -44,6 +44,8 @@ You must be using Chrome 79+ with the chrome://flags/#enable-experimental-web-pl
 * Visceral Fat
 * Protein Percentage
 
+* Persistent storage
+* Export profiles with history
 
 ## Requirements
 * Updated Chrome Browser

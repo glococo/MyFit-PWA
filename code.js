@@ -3,20 +3,51 @@
 const  $= _=> document.querySelector(_)
 const $$= _=> document.querySelectorAll(_)
 const log  = (...v)  => console.log( ...v )
-
-var devScan, miUser, packetLog=[]
-const profiles=[ {name:'Guillermo', sex:'Male', born:'1979-03-17', height:185}, {name:'Demo User', sex:'Male', born:'1979-01-01', height:185, demo:true} ]
+const msg  = { motivation:`This WebApp was made to demostrate how easy sometimes is to replace Native Apps.<br><br>If you don't own a Xiaomi Mi Composition Body Scale, close this window and run Demo to see how it feels.<br><br>Check this <a href='https://github.com/glococo/MyFit-PWA' target='_blank'>site</a> to see requirements. (v0.90)`,
+             noBleSupport:`Sorry.<br>Your browser do not support requestLEScan API.<br><br>Check this <a href='https://github.com/glococo/MyFit-PWA' target='_blank'>site</a> to see requirements.<br><br>If you don't own a Xiaomi Mi Composition Body Scale, close this window and run Demo to see how it feels.`,
+             noBleAdapter:`Sorry.<br>There seems to be no Buetooth adapter or, you dont have BT or Location enabled or denied access to Web API. Location is a mandatory in some mobiles beside this app don't need that feature.` }
+var devScan, miUser
+const profiles = []
 
 window.addEventListener('DOMContentLoaded', init )
 
 function addEventListeners(){
-  $('#welcome a').addEventListener('click', _=>motivation() )
   $('#profile-selector').addEventListener('change', e=>onSelectProfile(e.target.value) )
   $('#profile a').addEventListener('click', _=>submitProfile() )
   $('#profile a.is-warning').addEventListener('click', _=>userDelete() )
   $('#profile a.is-danger').addEventListener('click', _=>displayPage('#welcome') )
   $('#sense-title > div:first-child').addEventListener('click', _=>displayPage('#welcome') )
   $('#sense-title > div:last-child').addEventListener('click', _=>editProfile() )
+  setSVGIcons()
+}
+function exportProfiles(){
+    let a= document.createElement("a")
+    a.download= 'profiles.json'
+    a.href= window.URL.createObjectURL( new Blob([JSON.stringify(profiles)], {type:'application/json'}) )
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+}
+function saveThisRecord(){
+  let record={ date: miUser.date.toISOString() }
+  if( !miUser.history || !Array.isArray( miUser.history ) ) miUser.history=[]
+  miUser.composition.forEach( ref=> record[ref.name]=ref.value )
+  miUser.history.push(record)
+  profilesDB('save')
+  btnSaveFlip('saved')
+}
+function btnSaveFlip(status){
+  let btn= $$('#sense-weight .button')[2]
+  if( status=='saved' ) {
+    btn.innerHTML='Saved !'
+    btn.setAttribute('disabled','disabled')
+    btn.classList.remove('is-danger')
+    return btn.classList.add('is-success')
+  }
+  btn.innerHTML='Save this record!'
+  btn.removeAttribute('disabled')
+  btn.classList.add('is-danger')
+  btn.classList.remove('is-success')
 }
 function profileSex(btn){
   $$('#profile .main button').forEach( btn=> btn.classList.remove('is-focused') )
@@ -29,8 +60,10 @@ function userDelete(){
   profiles.splice(index,1)
   populateProfileSelector()
   notification('User deleted')
+  profilesDB('save')
 }
 function editProfile(){
+  $('#profile-title').innerHTML='Edit this profile'
   displayPage('#profile')
   $$('#profile .main input')[0].disabled= true
   $$('#profile .main input')[0].value= miUser.name
@@ -41,20 +74,22 @@ function editProfile(){
 }
 function submitProfile(){
   let user= { name: $$('#profile .main input')[0].value, height: $$('#profile .main input')[1].value, born: $$('#profile .main input')[2].value }
-  user.sex= $$('#profile .main button')[0].classList.contains('is-focused') ? 'Male' : []
-  user.sex= $$('#profile .main button')[1].classList.contains('is-focused') ? 'Female' : []
+  user.sex= $$('#profile .main button')[0].classList.contains('is-focused') ? 'Male' : 'Female'
   if( !user.name || !user.height || user.height<70 || user.height>250 || !user.born || !user.sex ) return notification('Incomplete fields')
   let profile= profiles.find( p=> p.name==user.name )
   if( profile ) {
     profile= user
     populateProfileSelector()
+    profilesDB('save')
     return notification('User updated')
   }
   profiles.push(user)
   populateProfileSelector()
+  profilesDB('save')
   return notification('User created')
 }
 function createNewProfile(){
+  $('#profile-title').innerHTML='Create a new profile'
   displayPage('#profile')
   $$('#profile .main input')[0].disabled= false
   $('#profile [type=text]').value=''
@@ -84,7 +119,7 @@ function launchSense() {
   weightActionButtons('start')
   displayPage('#sense')
   if( miUser.demo ) { miUser.demoLength=1; return runDemo() }
-  if( !devScan ) devScan = navigator.bluetooth.requestLEScan({ filters:[{name:'MIBCS'}] }).catch( e=> noBleAdapter() )
+  if( !devScan ) devScan = navigator.bluetooth.requestLEScan({ filters:[{name:'MIBCS'}] }).catch( e=> notification(msg.noBleAdapter) )
 }
 function runDemo() {
   if( !demoData[miUser.demoLength] ) return
@@ -106,19 +141,19 @@ function populateProfileSelector() {
     opt.text= '. . . create new profile'
     $('#profile-selector').add(opt)
 }
-const motivation  = _=> notification(`This WebApp was made to demostrate how easy sometimes is to replace Native Apps. If you don't own a Xiaomi Mi Composition Body Scale, try run Demo to see how it feels.`)
-const noBleSupport= _=> notification(`Sorry.<br>Your browser do not support requestLEScan API.<br>Check your browser flags.`)
-const noBleAdapter= _=> notification(`Sorry.<br>There seems to be no Buetooth adapter or, you dont have BT or Location enabled or denied access to Web API. Location is a mandatory in some mobiles beside this app don't need that feature.`)
 
 function notification(msg){
   $('#notification > div').innerHTML=`<a class="delete" onClick="displayPage('#welcome')"></a>${msg}`
   displayPage('#notification')
 }
 function weightActionButtons( status ){
-  $$('#sense-weight .button')   .forEach( btn=> btn.classList.add('is-hidden') )
+  $$('#sense-weight .button').forEach( btn=> btn.classList.add('is-hidden') )
   $$('#sense-impedance > div').forEach( div=> div.classList.add('is-hidden') )
-  if( status=='start' ) return $$('#sense-weight .button')[0].classList.remove('is-hidden')
-  if( status=='lights') return setTimeout( _=>turn5lights(),2000)
+  if( status=='lights') return setTimeout( _=>turn5lights(),1000)
+  if( status=='start' ) {
+    btnSaveFlip()
+    return $$('#sense-weight .button')[0].classList.remove('is-hidden')
+  }
   $$('#sense-weight .button')[1].classList.remove('is-hidden')
   $$('#sense-weight .button')[2].classList.remove('is-hidden')
 }
@@ -160,12 +195,26 @@ function init() {
   drawRulerGuide()
   addEventListeners()
   populateProfileSelector()
-  if( !navigator.bluetooth || !navigator.bluetooth.requestLEScan )  return noBleSupport()
+  if( !navigator.bluetooth || !navigator.bluetooth.requestLEScan )  return notification( msg.noBleSupport )
   navigator.bluetooth.addEventListener('advertisementreceived', e=> mibcsEvent(e) )
   displayPage( '#welcome' )
   navigator.serviceWorker.register('serviceworker.js').catch( _=> log('Error registering ServiceWorker') )
+  profilesDB()
 }
-
+function profilesDB( doSave ){
+  let demo= {name:'Demo User', sex:'Male', born:'1979-01-01', height:185, demo:true}
+  let pwaStorage = window.localStorage
+  let pwaProfiles = pwaStorage.getItem('profiles')
+  log(pwaProfiles)
+  if( doSave ) return pwaStorage.setItem('profiles', JSON.stringify(profiles) )
+  if( !pwaProfiles ) {
+    profiles.push( demo )
+    populateProfileSelector()
+    return pwaStorage.setItem( 'profiles', JSON.stringify(profiles) )
+  }
+  profiles.push( ...JSON.parse(pwaProfiles) )
+  populateProfileSelector()
+}
 // MIBCS: Mi Body Composite Scale. serviceData[1] byte reference
 // [ 7:'Without weight', 6:'Invalid Date', 5:'Got Weight', 4:'Jin Unit', 3:'unknown', 2:'unknown', 1:'Got Composition', 0:'unknown' ]
 // ServiceData sample: [2, 164, 228, 7, 2, 14, 11, 0, 55, 253, 255, 40, 20]
@@ -354,3 +403,7 @@ function getBoneMassScale(sex, weight, ref) {
 // https://github.com/oliexdev/openScale/blob/master/android_app/app/src/main/java/com/health/openscale/core/bluetooth/lib/MiScaleLib.java
 // https://github.com/Freeyourgadget/Gadgetbridge/blob/master/app/src/main/java/nodomain/freeyourgadget/gadgetbridge/service/devices/miscale2/MiScale2DeviceSupport.java
 // https://gist.github.com/sam016/4abe921b5a9ee27f67b3686910293026
+
+function setSVGIcons(){
+  $$('#welcome a.button')[1].innerHTML=`<svg width="12" height="12" version="1.1" viewBox="0 0 8 8"><path d="m1.3 8-1.26-1.26v-6c0-.198.06-.356.18-.476.127-.127.289-.19.487-.19h6.59c.198 0 .36.0635.487.19.127.12.19.279.19.476v6.6c0 .19-.0635.346-.19.466-.127.127-.289.19-.487.19zm.18-.402h1.27v-2.03c0-.169.0847-.254.254-.254h2.93c.169 0 .254.0847.254.254v2.03h1.11c.169 0 .254-.0847.254-.254v-6.6c0-.169-.0847-.254-.254-.254h-.836v3.38h-4.97v-3.38h-.783c-.169 0-.254.0847-.254.254v5.83zm.423-4.15h4.16v-2.96h-4.16zm1.32 4.15h.804v-1.92h-.804z" fill="#fff"/></svg>`
+}
