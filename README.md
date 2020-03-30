@@ -2,6 +2,7 @@
 ![MyFitSCALE](/screenshot.png?raw=true)
 
 Try it -> [https://my-fit-pwa.now.sh](https://my-fit-pwa.now.sh)
+
 See how it works -> [https://youtu.be/ok9lwpRJwN4](https://youtu.be/ok9lwpRJwN4)
 
 This WebApp was made to demostrate how easy sometimes is to replace Native Apps. If you don't own a Xiaomi Mi Composition Body Scale, try run Demo to see how it feels.
