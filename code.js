@@ -3,7 +3,7 @@
 const  $= _=> document.querySelector(_)
 const $$= _=> document.querySelectorAll(_)
 const log  = (...v)  => console.log( ...v )
-const msg  = { motivation:`This WebApp was made to demostrate how easy sometimes is to replace Native Apps.<br><br>If you don't own a Xiaomi Mi Composition Body Scale, close this window and run Demo to see how it feels.<br><br>Check this <a href='https://github.com/glococo/MyFit-PWA' target='_blank'>site</a> to see requirements. (v0.90)`,
+const msg  = { motivation:`This WebApp was made to demostrate how easy sometimes is to replace Native Apps.<br><br>If you don't own a Xiaomi Mi Composition Body Scale, close this window and run Demo to see how it feels.<br><br>Check this <a href='https://github.com/glococo/MyFit-PWA' target='_blank'>site</a> to see requirements. (v0.91)`,
              noBleSupport:`Sorry.<br>Your browser do not support requestLEScan API.<br><br>Check this <a href='https://github.com/glococo/MyFit-PWA' target='_blank'>site</a> to see requirements.<br><br>If you don't own a Xiaomi Mi Composition Body Scale, close this window and run Demo to see how it feels.`,
              noBleAdapter:`Sorry.<br>There seems to be no Buetooth adapter or, you dont have BT or Location enabled or denied access to Web API. Location is a mandatory in some mobiles beside this app don't need that feature.` }
 var devScan, miUser
@@ -119,7 +119,7 @@ function launchSense() {
   weightActionButtons('start')
   displayPage('#sense')
   if( miUser.demo ) { miUser.demoLength=1; return runDemo() }
-  if( !devScan ) devScan = navigator.bluetooth.requestLEScan({ filters:[{name:'MIBCS'}] }).catch( e=> notification(msg.noBleAdapter) )
+  if( !devScan ) navigator.bluetooth.requestLEScan({ filters:[{name:'MIBCS'}] }).then( ble=> devScan=ble ).catch( e=> notification(msg.noBleAdapter) )
 }
 function runDemo() {
   if( !demoData[miUser.demoLength] ) return
@@ -205,7 +205,6 @@ function profilesDB( doSave ){
   let demo= {name:'Demo User', sex:'Male', born:'1979-01-01', height:185, demo:true}
   let pwaStorage = window.localStorage
   let pwaProfiles = pwaStorage.getItem('profiles')
-  log(pwaProfiles)
   if( doSave ) return pwaStorage.setItem('profiles', JSON.stringify(profiles) )
   if( !pwaProfiles ) {
     profiles.push( demo )
@@ -227,7 +226,6 @@ function mibcsEvent( event ){
     processEvent( { date: date, stepped: !(sData[1]&0x80), gotWeight: !!(sData[1]&0x20), gettingImpedance: !!(sData[1]&0x22), weight: weight, impedance: impedance } )
 }
 function processEvent( packet ){
-  //log( packet )
   let { stepped, gotWeight, gettingImpedance, weight, impedance } = packet
   if( !stepped && !miUser.weight ) return drawWeight(0)
   if( stepped && !gotWeight )  return drawWeight( weight )

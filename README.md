@@ -16,6 +16,8 @@ There is always room to be improved, like:
 - Read Xiaomi Mi Scale 2 measurements history memory
 - Make a multilanguage UI, and so on...
 
+
+![Desktop](/onDesktops.jpg?raw=true)
 ## Compatibility
 You must be using Chrome 79+ with the chrome://flags/#enable-experimental-web-platform-features flag enabled
 
