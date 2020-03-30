@@ -4,65 +4,78 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>My Fit PWA - Advanced Web Bluetooth</title>
     <link rel="manifest" href="/manifest.json">
-    <link rel="icon" href="homescreen48.png">
+    <meta name="theme-color" content="#aad3df">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" sizes="192x192" href="myfit_192.png">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css">
-    <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
     <link href="https://fonts.googleapis.com/css?family=Ubuntu&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+Thambi+2:wght@600&display=swap" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="index.css">
     <script src="code.js"></script>
+    <script src="demodata.js"></script>
   </head>
 <body>
+  <div id="background" class="frame"> <div></div><div></div><div></div> </div>
+  <div id="onlyPortrait" class="frame"> <div class="notification"> Sorry, currently this web can only be viewed in Portrait (vertical) mode </div> </div> 
+  <div id="notification" class="frame is-hidden"> <div class="notification"> </div> </div>
 
-  <div class="global" id="intro">
+  <div id="welcome" class="frame is-hidden">
     <div>
-      Welcome to My Fit Web App
-      <br><br>
-      <img src="miScale.png" style="height:25vh">
+      <div style="grid-area: 1/1/2/4"><div class="welcome-title">MY FIT SCALE</div>Embrace a healthy lifestyle<br>Get in shape !</div>
+      <div class="miScale"> <div></div><div></div><div></div><div></div> </div>
+      <div class="miScale miScaleShadow"> </div>
     </div>
-    <div>
-      <div class="field is-grouped is-grouped-centered">
-        <div class="select is-rounded is-info is-small"> <select id="profile-selector"> </select></div>
-      </div>
-    </div>
+    <div>  <div class="field is-grouped is-grouped-centered">  <div class="select is-rounded is-info is-medium"> <select id="profile-selector"> </select></div> </div>  </div>
+    <div>  <a class="button is-small is-rounded is-light is-outlined">?</a> <br>&nbsp; </div>
   </div>
 
-  <div class="global withButtons" id="profile">
-    <div class="wb-Head" id="profile-title">Create a new profile</div>
-    <div class="wb-Main">
-      <div class="field"> <label class="label">Name</label>
-        <div class="control"> <input class="input is-small" type="text" placeholder="Full name"> </div>
-      </div>
-      <div class="field"> <label class="label">Height</label>
-        <div class="control"> <input class="input is-small" type="number" min="50" step="0.1" style="width:140px"> </div>
-      </div>
-      <div class="field"> <label class="label">Birth date</label>    
-        <div class="control"> <input class="input is-small" type="date" style="width:140px"> </div>
-      </div>
-      <div class="control">
-        <label class="radio"> <input type="radio" value="Male">   Male </label>
-        <label class="radio"> <input type="radio" value="Female"> Female </label>
+  <div id="profile" class="frame is-hidden">
+    <div class="bar barTop" id="profile-title">Create a new profile</div>
+    <div class="main">
+      <div class="box content">
+        <p><b>Let me know about you</b></p> <p>Body composition results are made with your height and age</p>
+
+        <div class="field"> <label class="label">Name</label>
+            <div class="control"> <input class="input is-normal is-rounded" type="text" placeholder="Full name"> </div>  </div>
+
+        <div class="field"> <label class="label">Height</label>
+            <div class="control"> <input class="input is-normal is-rounded" type="number" min="50" step="0.1" style="width:140px" placeholder="Height in cm"> </div>  </div>
+
+        <div class="field"> <label class="label">Birth date</label> <div class="control"> <input class="input is-normal is-rounded" type="date" style="width:200px"> </div>  </div>
+        <br>
+        <div class="buttons has-addons is-centered">
+          <button class="button is-info is-outlined is-small" onClick="profileSex(0)"> Male </button> <button class="button is-danger is-outlined is-small" onClick="profileSex(1)"> Female </button> </div>
       </div>
     </div>
-    <div class="wb-Footer">
+    <div class="barButtons">
       <a class="button"> Submit </a>
       <a class="button is-danger"> Cancel </a>
       <a class="button is-warning is-hidden"> Delete </a>
     </div>
   </div>
 
-  <div class="global" id="sense">
-    <div class="wb-Head" id="sense-title">
-        <div> <i class="fas fa-angle-left"></i> </div>
-        <div>Guillermo Lo Coco</div>
-        <div> <i class="fas fa-user-cog"></i> </div>
+  <div id="sense" class="frame is-hidden">
+    <div id="sense-title" class="bar barTop">
+        <div> <svg style="height:1em;vertical-align:-.125em;display:inline-block;scale:1.1" viewBox="0 0 256 512"><path fill="currentColor" d="M31.7 239l136-136c9.4-9.4 24.6-9.4 33.9 0l22.6 22.6c9.4 9.4 9.4 24.6 0 33.9L127.9 256l96.4 96.4c9.4 9.4 9.4 24.6 0 33.9L201.7 409c-9.4 9.4-24.6 9.4-33.9 0l-136-136c-9.5-9.4-9.5-24.6-.1-34z"></path></svg> </div>
+        <div> _ username _ </div>
+        <div> <svg style="height:1em;vertical-align:-.125em;display:inline-block" viewBox="0 0 640 512"><path fill="currentColor" d="M610.5 373.3c2.6-14.1 2.6-28.5 0-42.6l25.8-14.9c3-1.7 4.3-5.2 3.3-8.5-6.7-21.6-18.2-41.2-33.2-57.4-2.3-2.5-6-3.1-9-1.4l-25.8 14.9c-10.9-9.3-23.4-16.5-36.9-21.3v-29.8c0-3.4-2.4-6.4-5.7-7.1-22.3-5-45-4.8-66.2 0-3.3.7-5.7 3.7-5.7 7.1v29.8c-13.5 4.8-26 12-36.9 21.3l-25.8-14.9c-2.9-1.7-6.7-1.1-9 1.4-15 16.2-26.5 35.8-33.2 57.4-1 3.3.4 6.8 3.3 8.5l25.8 14.9c-2.6 14.1-2.6 28.5 0 42.6l-25.8 14.9c-3 1.7-4.3 5.2-3.3 8.5 6.7 21.6 18.2 41.1 33.2 57.4 2.3 2.5 6 3.1 9 1.4l25.8-14.9c10.9 9.3 23.4 16.5 36.9 21.3v29.8c0 3.4 2.4 6.4 5.7 7.1 22.3 5 45 4.8 66.2 0 3.3-.7 5.7-3.7 5.7-7.1v-29.8c13.5-4.8 26-12 36.9-21.3l25.8 14.9c2.9 1.7 6.7 1.1 9-1.4 15-16.2 26.5-35.8 33.2-57.4 1-3.3-.4-6.8-3.3-8.5l-25.8-14.9zM496 400.5c-26.8 0-48.5-21.8-48.5-48.5s21.8-48.5 48.5-48.5 48.5 21.8 48.5 48.5-21.7 48.5-48.5 48.5zM224 256c70.7 0 128-57.3 128-128S294.7 0 224 0 96 57.3 96 128s57.3 128 128 128zm201.2 226.5c-2.3-1.2-4.6-2.6-6.8-3.9l-7.9 4.6c-6 3.4-12.8 5.3-19.6 5.3-10.9 0-21.4-4.6-28.9-12.6-18.3-19.8-32.3-43.9-40.2-69.6-5.5-17.7 1.9-36.4 17.9-45.7l7.9-4.6c-.1-2.6-.1-5.2 0-7.8l-7.9-4.6c-16-9.2-23.4-28-17.9-45.7.9-2.9 2.2-5.8 3.2-8.7-3.8-.3-7.5-1.2-11.4-1.2h-16.7c-22.2 10.2-46.9 16-72.9 16s-50.6-5.8-72.9-16h-16.7C60.2 288 0 348.2 0 422.4V464c0 26.5 21.5 48 48 48h352c10.1 0 19.5-3.2 27.2-8.5-1.2-3.8-2-7.7-2-11.8v-9.2z"></path></svg> </div>
     </div>
-    <div class="sMain sBackground"></div>
-    <div class="sMain sLoading is-hidden">
-      <div class="loadAni"> <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>  </div>
+
+    <div id="sense-weight">
+      <div> <div id="sense-ruler"></div> </div>
+      <div> <canvas id="sense-guide" width="22" height="90"></canvas> </div>
+      <div> 0 <span>.0</span></div>
+      <div> kg </div>
+      <div> <a class="button is-light is-outlined is-rounded is-loading is-normal"> __ __ __ __ </a> <div id="sense-impedance"> <div></div><div></div><div></div><div></div><div></div></div>
+            <a class="button is-primary is-light is-outlined is-rounded" onClick="launchSense()"> WEIGHT AGAIN </a>
+            <br><br>
+            <a class="button is-rounded is-danger" onClick="saveThisRecord()">Save this record!</a>
+      </div>
     </div>
-    <div class="sMain sWeight"> </div>
-    <div class="sGoal">41 years old & 183cm height</div>
-    <div class="sResults" style="display:none"> </div>
+
+    <div id="sense-results" class="is-hidden"> </div>
+    <div id="sense-profile" class="bar barFooter"> _years old & height_ </div>
+
   </div>
 
 </body>

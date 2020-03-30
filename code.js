@@ -4,31 +4,95 @@ const  $= _=> document.querySelector(_)
 const $$= _=> document.querySelectorAll(_)
 const log  = (...v)  => console.log( ...v )
 
-var devScan, miUser={}, drawn={ weight:false, composition:false }
-var users = { guillermo:{ name:'Guillermo', sex:"Male", age:40, height:184, impedance:null, weight:null } }
-
-// Do a console test: run-> getCompositionNew( users.__yourdata__ )
-// getCompositionNew( users.guillermo )
+var devScan, miUser, packetLog=[]
+const profiles=[ {name:'Guillermo', sex:'Male', born:'1979-03-17', height:185}, {name:'Demo User', sex:'Male', born:'1979-01-01', height:185, demo:true} ]
 
 window.addEventListener('DOMContentLoaded', init )
 
 function addEventListeners(){
+  $('#welcome a').addEventListener('click', _=>motivation() )
   $('#profile-selector').addEventListener('change', e=>onSelectProfile(e.target.value) )
-  $('#profile a').addEventListener('click', e=>submitProfile() )
-  $('#profile a.is-warning').addEventListener('click', _=>showGlobal('#intro') )
-  $('#profile a.is-danger').addEventListener('click', _=>showGlobal('#intro') )
+  $('#profile a').addEventListener('click', _=>submitProfile() )
+  $('#profile a.is-warning').addEventListener('click', _=>userDelete() )
+  $('#profile a.is-danger').addEventListener('click', _=>displayPage('#welcome') )
+  $('#sense-title > div:first-child').addEventListener('click', _=>displayPage('#welcome') )
+  $('#sense-title > div:last-child').addEventListener('click', _=>editProfile() )
+}
+function profileSex(btn){
+  $$('#profile .main button').forEach( btn=> btn.classList.remove('is-focused') )
+  $$('#profile .main button')[btn].classList.add('is-focused')
+}
+function userDelete(){
+  let userFormName= $$('#profile .main input')[0].value
+  let index= profiles.findIndex( p=> p.name==userFormName )
+  if( index==-1 ) return notification('User not found')
+  profiles.splice(index,1)
+  populateProfileSelector()
+  notification('User deleted')
+}
+function editProfile(){
+  displayPage('#profile')
+  $$('#profile .main input')[0].disabled= true
+  $$('#profile .main input')[0].value= miUser.name
+  $$('#profile .main input')[1].value= miUser.height
+  $$('#profile .main input')[2].value= miUser.born
+  miUser.sex=='Male' ? profileSex(0) : profileSex(1)
+  $('#profile a.is-warning').classList.remove('is-hidden')
+}
+function submitProfile(){
+  let user= { name: $$('#profile .main input')[0].value, height: $$('#profile .main input')[1].value, born: $$('#profile .main input')[2].value }
+  user.sex= $$('#profile .main button')[0].classList.contains('is-focused') ? 'Male' : []
+  user.sex= $$('#profile .main button')[1].classList.contains('is-focused') ? 'Female' : []
+  if( !user.name || !user.height || user.height<70 || user.height>250 || !user.born || !user.sex ) return notification('Incomplete fields')
+  let profile= profiles.find( p=> p.name==user.name )
+  if( profile ) {
+    profile= user
+    populateProfileSelector()
+    return notification('User updated')
+  }
+  profiles.push(user)
+  populateProfileSelector()
+  return notification('User created')
 }
 function createNewProfile(){
-  showGlobal('#profile')
+  displayPage('#profile')
+  $$('#profile .main input')[0].disabled= false
   $('#profile [type=text]').value=''
   $('#profile a.is-warning').classList.add('is-hidden')
 }
 function onSelectProfile( value ){
     if( value == 'Select profile' || !value ) return
     if( value == '. . . create new profile' ) return createNewProfile()
-    launchScale( value )
+    let profile= profiles.find( p=> p.name==value )
+    if( !profile || !profile.sex || !profile.born || !profile.height ) {
+      notification(`Something went wrong, I can't find the profile or is incomplete`)
+      return populateProfileSelector()
+    }
+    miUser = profile
+    return launchSense()
 }
-function populateProfileSelector( profiles ) {
+function launchSense() {
+  log('Launch')
+  miUser.impedance  = null
+  miUser.weight     = null
+  miUser.composition= null
+  miUser.age        = Math.floor( ( new Date() - new Date(miUser.born) ) /1000/60/60/24/365 )
+  $('#sense-profile').innerHTML = `${miUser.age} years old & ${miUser.height}cm tall`
+  $('#sense-results').classList.add('is-hidden')
+  $('#sense-title > div:nth-child(2)').innerHTML= miUser.name
+  drawWeight(0)
+  weightActionButtons('start')
+  displayPage('#sense')
+  if( miUser.demo ) { miUser.demoLength=1; return runDemo() }
+  if( !devScan ) devScan = navigator.bluetooth.requestLEScan({ filters:[{name:'MIBCS'}] }).catch( e=> noBleAdapter() )
+}
+function runDemo() {
+  if( !demoData[miUser.demoLength] ) return
+  processEvent( demoData[miUser.demoLength] )
+  ++miUser.demoLength
+  setTimeout( _=> runDemo(), 400)
+}
+function populateProfileSelector() {
     let opt= document.createElement('option')
     opt.text= 'Select profile'
     $('#profile-selector').length=0
@@ -42,44 +106,64 @@ function populateProfileSelector( profiles ) {
     opt.text= '. . . create new profile'
     $('#profile-selector').add(opt)
 }
+const motivation  = _=> notification(`This WebApp was made to demostrate how easy sometimes is to replace Native Apps. If you don't own a Xiaomi Mi Composition Body Scale, try run Demo to see how it feels.`)
+const noBleSupport= _=> notification(`Sorry.<br>Your browser do not support requestLEScan API.<br>Check your browser flags.`)
+const noBleAdapter= _=> notification(`Sorry.<br>There seems to be no Buetooth adapter or, you dont have BT or Location enabled or denied access to Web API. Location is a mandatory in some mobiles beside this app don't need that feature.`)
 
-const noBleSupport= _=>{ $('.gInit').innerHTML=`Sorry.<br>Your browser do not support requestLEScan API.<br>Check your browser flags.`; showGlobal('.gInit') }
-const noBleAdapter= _=>{ $('.gInit').innerHTML=`Sorry.<br>There seems to be no Bt LE adapter, you dont have BT or Location enabled or denied access to Web API.`; showGlobal('.gInit') }
-
+function notification(msg){
+  $('#notification > div').innerHTML=`<a class="delete" onClick="displayPage('#welcome')"></a>${msg}`
+  displayPage('#notification')
+}
+function weightActionButtons( status ){
+  $$('#sense-weight .button')   .forEach( btn=> btn.classList.add('is-hidden') )
+  $$('#sense-impedance > div').forEach( div=> div.classList.add('is-hidden') )
+  if( status=='start' ) return $$('#sense-weight .button')[0].classList.remove('is-hidden')
+  if( status=='lights') return setTimeout( _=>turn5lights(),2000)
+  $$('#sense-weight .button')[1].classList.remove('is-hidden')
+  $$('#sense-weight .button')[2].classList.remove('is-hidden')
+}
+function turn5lights(){
+    if( miUser.composition ) return
+    let remaning= $$('#sense-impedance > .is-hidden')
+    if( remaning.length ) remaning[0].classList.remove('is-hidden')
+    if( remaning.length > 1 ) return setTimeout( _=>turn5lights(),500)
+    weightActionButtons('end')
+}
 function drawWeight(weight){
-  if( drawn.weight ) return
-  $('.gWeight').innerHTML=`${weight} <div>kg</div>`
+  if( miUser.weight ) return
+  $('#sense-weight > div:nth-child(3)').innerHTML=`${Math.floor(weight)}<span>.${weight*10%10}</span>`
+  let degree= (weight*76 /100 ) + 0.2
+  $('#sense-ruler').style.transform= `translateX(-50%) rotate(-${degree}deg)`
+}
+function drawRulerGuide() {
+    let ctx=$('#sense-guide').getContext('2d')
+    ctx.fillStyle='#f14668'
+    ctx.beginPath()
+    ctx.moveTo(11,0); ctx.lineTo(12,80); ctx.lineTo(19,89); ctx.lineTo(3,89); ctx.lineTo(10,80); ctx.fill()
 }
 function drawComposition( miUser ) {
-  if( drawn.composition ) return
-  drawn.composition= true
   let inner= ''
-  miUser.composition.forEach( data=> inner+= `<div> ${data.short} <br> ${data.value} ${data.unit?data.unit:''} </div>` )
-  $('.gResults').innerHTML= inner
-  $('.gResults').style.display= 'grid'
+  miUser.composition.forEach( data=> inner+= `<div><span>${data.short}</span>${data.value} ${data.unit?data.unit:''}</div>` )
+  $('#sense-results').innerHTML= inner
+  $('#sense-results').classList.remove('is-hidden')
   log( `Peso: ${miUser.weight}, Impedance: ${miUser.impedance}, Date: ${miUser.date}, Composition: `, miUser.composition )
 }
-function showGlobal( theClass ) {
-  $$('.global').forEach( e=> e.classList.add('is-hidden') )
-  $( theClass ).classList.remove('is-hidden')
+function displayPage( selector ) {
+  $$('.frame').forEach( e=> e.classList.add('is-hidden') )
+  $('#background').classList.remove('is-hidden')
+  if( !selector ) return
+  $( selector ).classList.remove('is-hidden')
+  if( selector == '#welcome' ) $('#profile-selector').selectedIndex=0
 }
 function init() {
+  displayPage()
+  drawRulerGuide()
   addEventListeners()
-  let profiles=[ {name: "Guillermo", sex: "Male", age: 40, height: 184}, {name: "Cecilia", sex: "Female", age: 34, height: 155}, {name: "Vainillo", sex: "Male", age: 24, height: 145} ]
-  populateProfileSelector( profiles )
-  showGlobal( '#sense' )
+  populateProfileSelector()
   if( !navigator.bluetooth || !navigator.bluetooth.requestLEScan )  return noBleSupport()
   navigator.bluetooth.addEventListener('advertisementreceived', e=> mibcsEvent(e) )
-}
-function launchBLEScan(){
-  btScan( users.guillermo )
-}
-
-function btScan(user) {
-  showGlobal( '.gLoading' )
-  if( !user || !user.sex || !user.age || !user.height ) return log("no user")
-  miUser = user
-  devScan = navigator.bluetooth.requestLEScan({ filters:[{name:'MIBCS'}] }).catch( e=> noBleAdapter() )
+  displayPage( '#welcome' )
+  navigator.serviceWorker.register('serviceworker.js').catch( _=> log('Error registering ServiceWorker') )
 }
 
 // MIBCS: Mi Body Composite Scale. serviceData[1] byte reference
@@ -88,21 +172,27 @@ function btScan(user) {
 function mibcsEvent( event ){
     if( event.name!='MIBCS' ) return
     let sData  = new Uint8Array( event.serviceData.get('0000181b-0000-1000-8000-00805f9b34fb').buffer )
-    if( sData[1]&0x80 ) return
-    showGlobal( '.gWeight' )
     let date   = ((sData[3]<<8)+sData[2]) +"-"+ sData[4] +"-"+ sData[5] +" "+ sData[6] +":"+ sData[7] +":"+ sData[8]
     let weight = ( (sData[12]<<8) + sData[11] ) /200
     let impedance = (sData[10]<<8) + sData[9]
-    if( !(sData[1]&0x20) )  return drawWeight( weight )
-    if( !miUser.weight )  miUser.weight= weight
-    if( !miUser.date   )  miUser.date  = date
-    drawWeight( weight )
-    drawn.weight= true
-    if( !(sData[1] & 0x22) || impedance>3000 || !impedance ) return
-    if( !miUser.composition) {
+    processEvent( { date: date, stepped: !(sData[1]&0x80), gotWeight: !!(sData[1]&0x20), gettingImpedance: !!(sData[1]&0x22), weight: weight, impedance: impedance } )
+}
+function processEvent( packet ){
+  //log( packet )
+  let { stepped, gotWeight, gettingImpedance, weight, impedance } = packet
+  if( !stepped && !miUser.weight ) return drawWeight(0)
+  if( stepped && !gotWeight )  return drawWeight( weight )
+  if( stepped && !miUser.weight ) {
+      drawWeight( weight )
+      miUser.weight= weight
+      miUser.date  = new Date()
+      weightActionButtons('lights')
+  }
+  if( gettingImpedance && !miUser.impedance && impedance && impedance<3000 ) {
       miUser.impedance  = impedance
       miUser.composition= getCompositionNew( miUser )
       drawComposition( miUser )
+      weightActionButtons('end')
     }
 }
 

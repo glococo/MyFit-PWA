@@ -1,19 +1,20 @@
-# My Fit Progressive Web App for "Mi Scale 2"
-![MyFitPWA](/screenshot.png?raw=true)
+# My Fit SCALE is a Progressive Web App for "Mi Scale 2"
+![MyFitSCALE](/screenshot.png?raw=true)
 
-Test it -> [__soon__](__)
+Test it -> [https://my-fit-pwa.now.sh](https://my-fit-pwa.now.sh)
 
-This is a PWA playground for testing new Bluetooth LE API features
+This WebApp was made to demostrate how easy sometimes is to replace Native Apps. If you don't own a Xiaomi Mi Composition Body Scale, try run Demo to see how it feels.
+And also this is a PWA playground for testing new Bluetooth LE API features like:
 
 - navigator.bluetooth
 - navigator.bluetooth.requestLEScan
 
 
-There is room to be improved, like:
+There is always room to be improved, like:
 - use fallback method navigator.bluetooth.requestDevice for read last completed measurement
   (this method will not be able to listen BLE broadcast packets)
 - Read Xiaomi Mi Scale 2 measurements history memory
-- Make a UI with User Profile selector and store each measurement on each user
+- Make a multilanguage UI with persistent storage, and so on...
 
 ## Compatibility
 You must be using Chrome 79+ with the chrome://flags/#enable-experimental-web-platform-features flag enabled
@@ -51,10 +52,6 @@ You must be using Chrome 79+ with the chrome://flags/#enable-experimental-web-pl
 ## How to use in your site
 git clone https://github.com/glococo/MyFit-PWA.git
 and setup it in your hosting. Must use https.
-
-or
-
-Use this -> [__soon__](__)
 
 ## License
 Copyright (C) 2020 Guillermo Lo Coco

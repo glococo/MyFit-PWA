@@ -1,11 +1,13 @@
 {
-  "name": "My Fit PWA",
-  "short_name": "MyFitPWA",
-  "description": "A simple PWA for Xiaomi Mi Scale 2",
+  "name": "MY FIT SCALE",
+  "short_name": "MyFitScale",
+  "description": "Embrace a healthy lifestyle",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#4285f4",
-  "theme_color": "#4285f4",
+  "background_color": "#16486e",
+  "theme_color": "#16486e",
   "start_url":".",
-  "icons": [ {"src":"myfit_192.png","type":"image/png","sizes":"192x192"},{ "src":"myfit_logo_min.svg", "sizes":"512x512" } ]
+  "scope":"/",
+  "icons": [ { "src":"myfit_192.png","type":"image/png","sizes":"192x192" },
+             { "src":"myfit_512.png","type":"image/png","sizes":"512x512" } ]
 }
