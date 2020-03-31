@@ -125,7 +125,7 @@ function launchSense() {
   weightActionButtons('start')
   displayPage('#sense')
   if( miUser.demo ) { miUser.demoLength=1; return runDemo() }
-  if( !devScan ) navigator.bluetooth.requestLEScan({ filters:[{name:'MIBCS'}] }).then( ble=> devScan=ble ).catch( e=> notification(msg.noBleAdapter) )
+  if( !devScan && navigator.bluetooth ) navigator.bluetooth.requestLEScan({ filters:[{name:'MIBCS'}] }).then( ble=> devScan=ble ).catch( e=> notification(msg.noBleAdapter) )
 }
 function runDemo() {
   if( !demoData[miUser.demoLength] ) return
