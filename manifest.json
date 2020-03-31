@@ -8,6 +8,6 @@
   "theme_color": "#16486e",
   "start_url":".",
   "scope":"/",
-  "icons": [ { "src":"myfit_192.png","type":"image/png","sizes":"192x192" },
-             { "src":"myfit_512.png","type":"image/png","sizes":"512x512" } ]
+  "icons": [ { "src":"assets/myfit_192.png","type":"image/png","sizes":"192x192" },
+             { "src":"assets/myfit_512.png","type":"image/png","sizes":"512x512" } ]
 }

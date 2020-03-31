@@ -6,9 +6,9 @@ const log  = (...v)  => console.log( ...v )
 const msg  = { motivation:`This WebApp was made to demostrate how easy sometimes is to replace Native Apps.<br><br>If you don't own a Xiaomi Mi Composition Body Scale, close this window and run Demo to see how it feels.<br><br>Check this <a href='https://github.com/glococo/MyFit-PWA' target='_blank'>site</a> to see requirements. (v0.91)`,
              noBleSupport:`Sorry.<br>Your browser do not support requestLEScan API.<br><br>Check this <a href='https://github.com/glococo/MyFit-PWA' target='_blank'>site</a> to see requirements.<br><br>If you don't own a Xiaomi Mi Composition Body Scale, close this window and run Demo to see how it feels.`,
              noBleAdapter:`Sorry.<br>There seems to be no Buetooth adapter or, you dont have BT or Location enabled or denied access to Web API. Location is a mandatory in some mobiles beside this app don't need that feature.` }
-var devScan, miUser
+var devScan, miUser, global={skinIndex:0}
 const profiles = []
-
+const bgSkins  = [ ['#31c9d6', '#1a0f39'], ['#d6be31', '#e54202'], ['#1bcc2c', '#122a14'], ['#c4c4c4', '#272b32'] ]
 window.addEventListener('DOMContentLoaded', init )
 
 function addEventListeners(){
@@ -19,6 +19,12 @@ function addEventListeners(){
   $('#sense-title > div:first-child').addEventListener('click', _=>displayPage('#welcome') )
   $('#sense-title > div:last-child').addEventListener('click', _=>editProfile() )
   setSVGIcons()
+}
+function toggleBG(){
+  ++global.skinIndex
+  if( global.skinIndex>=bgSkins.length ) global.skinIndex=0
+  let i= global.skinIndex
+  $('#background').style.backgroundImage=`radial-gradient(circle, ${bgSkins[i][0]}, ${bgSkins[i][1]})`
 }
 function exportProfiles(){
     let a= document.createElement("a")
@@ -184,7 +190,7 @@ function drawComposition( miUser ) {
   log( `Peso: ${miUser.weight}, Impedance: ${miUser.impedance}, Date: ${miUser.date}, Composition: `, miUser.composition )
 }
 function displayPage( selector ) {
-  $$('.frame').forEach( e=> e.classList.add('is-hidden') )
+  $$('page').forEach( e=> e.classList.add('is-hidden') )
   $('#background').classList.remove('is-hidden')
   if( !selector ) return
   $( selector ).classList.remove('is-hidden')
@@ -403,5 +409,6 @@ function getBoneMassScale(sex, weight, ref) {
 // https://gist.github.com/sam016/4abe921b5a9ee27f67b3686910293026
 
 function setSVGIcons(){
-  $$('#welcome a.button')[1].innerHTML=`<svg width="12" height="12" version="1.1" viewBox="0 0 8 8"><path d="m1.3 8-1.26-1.26v-6c0-.198.06-.356.18-.476.127-.127.289-.19.487-.19h6.59c.198 0 .36.0635.487.19.127.12.19.279.19.476v6.6c0 .19-.0635.346-.19.466-.127.127-.289.19-.487.19zm.18-.402h1.27v-2.03c0-.169.0847-.254.254-.254h2.93c.169 0 .254.0847.254.254v2.03h1.11c.169 0 .254-.0847.254-.254v-6.6c0-.169-.0847-.254-.254-.254h-.836v3.38h-4.97v-3.38h-.783c-.169 0-.254.0847-.254.254v5.83zm.423-4.15h4.16v-2.96h-4.16zm1.32 4.15h.804v-1.92h-.804z" fill="#fff"/></svg>`
+  $$('#welcome a.button')[2].innerHTML=`<svg width="12" height="12" version="1.1" viewBox="0 0 8 8"><path d="m1.3 8-1.26-1.26v-6c0-.198.06-.356.18-.476.127-.127.289-.19.487-.19h6.59c.198 0 .36.0635.487.19.127.12.19.279.19.476v6.6c0 .19-.0635.346-.19.466-.127.127-.289.19-.487.19zm.18-.402h1.27v-2.03c0-.169.0847-.254.254-.254h2.93c.169 0 .254.0847.254.254v2.03h1.11c.169 0 .254-.0847.254-.254v-6.6c0-.169-.0847-.254-.254-.254h-.836v3.38h-4.97v-3.38h-.783c-.169 0-.254.0847-.254.254v5.83zm.423-4.15h4.16v-2.96h-4.16zm1.32 4.15h.804v-1.92h-.804z" fill="#fff"/></svg>`
+  $$('#welcome a.button')[1].innerHTML=`<svg width="12" height="12" version="1.1" viewBox="0 0 10 8"><path d="m9.86 1.51-3.04-1.51c-.314.434-1.01.738-1.82.738s-1.51-.303-1.82-.738l-3.04 1.51c-.123.0625-.173.212-.112.336l.894 1.79c.0625.123.212.173.336.112l.884-.433c.166-.0813.359.0391.359.225v3.96c0 .277.223.5.5.5h4c.277 0 .5-.223.5-.5v-3.96c0-.184.194-.306.359-.225l.884.433c.123.0625.273.0125.336-.112l.895-1.79c.0625-.123.0125-.275-.111-.336z" fill="none" stroke="#fff" stroke-width="0.7"/></svg>`
 }

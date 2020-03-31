@@ -1,9 +1,9 @@
 # My Fit SCALE is a Progressive Web App for "Mi Scale 2"
-![MyFitSCALE](/screenshot.png?raw=true)
+![MyFitSCALE](/assets/screenshot.png?raw=true)
 
 Try it -> [https://my-fit-pwa.now.sh](https://my-fit-pwa.now.sh)
 
-See how it works -> [https://youtu.be/ok9lwpRJwN4](https://youtu.be/ok9lwpRJwN4)
+See how it works -> [https://youtu.be/STR1Re5WSkQ](https://youtu.be/STR1Re5WSkQ)
 
 This WebApp was made to demostrate how easy sometimes is to replace Native Apps. If you don't own a Xiaomi Mi Composition Body Scale, try run Demo to see how it feels.
 And also this is a PWA playground for testing new Bluetooth LE API features like:
@@ -19,7 +19,7 @@ There is always room to be improved, like:
 - Make a multilanguage UI, and so on...
 
 
-![Desktop](/onDesktops.jpg?raw=true)
+![Desktop](/assets/onDesktops.jpg?raw=true)
 ## Compatibility
 You must be using Chrome 79+ with the chrome://flags/#enable-experimental-web-platform-features flag enabled
 

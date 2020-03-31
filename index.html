@@ -6,30 +6,30 @@
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#aad3df">
     <link rel="manifest" href="manifest.json">
-    <link rel="icon" sizes="192x192" href="myfit_192.png">
+    <link rel="icon" sizes="192x192" href="assets/myfit_192.png">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css">
-    <link href="https://fonts.googleapis.com/css?family=Ubuntu&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Baloo+Thambi+2:wght@600&display=swap" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="index.css">
     <script src="code.js"></script>
-    <script src="demodata.js"></script>
+    <script src="assets/demodata.js"></script>
   </head>
 <body>
-  <div id="background" class="frame"> <div></div><div></div><div></div> </div>
-  <div id="onlyPortrait" class="frame"> <div class="notification"> Sorry, currently this web can only be viewed in Portrait (vertical) mode </div> </div> 
-  <div id="notification" class="frame is-hidden"> <div class="notification"> </div> </div>
+  <page id="background"> <div></div><div></div><div></div> </page>
+  <page id="onlyPortrait"> <div class="notification"> Sorry, currently this web can only be viewed in Portrait (vertical) mode </div> </page> 
+  <page id="notification"> <div class="notification"> </div> </page>
 
-  <div id="welcome" class="frame is-hidden">
+  <page id="welcome">
     <div>
       <div style="grid-area: 1/1/2/4"><div class="welcome-title">MY FIT SCALE</div>Embrace a healthy lifestyle<br>Get in shape !</div>
       <div class="miScale"> <div></div><div></div><div></div><div></div> </div>
       <div class="miScale miScaleShadow"> </div>
     </div>
     <div>  <div class="field is-grouped is-grouped-centered">  <div class="select is-rounded is-info is-medium"> <select id="profile-selector"> </select></div> </div>  </div>
-    <div>  <a class="button is-small is-rounded is-light is-outlined" onClick="notification( msg.motivation )">?</a> <a class="button is-small is-rounded is-light is-outlined" onClick="exportProfiles()">🖫</a><br>&nbsp; </div>
-  </div>
+    <div>  <a class="button is-small is-rounded is-light is-outlined" onClick="notification( msg.motivation )">?</a>&nbsp;
+           <a class="button is-small is-rounded is-light is-outlined" onClick="toggleBG()"></a>&nbsp;
+           <a class="button is-small is-rounded is-light is-outlined" onClick="exportProfiles()"></a><br>&nbsp; </div>
+  </page>
 
-  <div id="profile" class="frame is-hidden">
+  <page id="profile">
     <div class="bar barTop" id="profile-title">Create a new profile</div>
     <div class="main">
       <div class="box content">
@@ -52,9 +52,9 @@
       <a class="button is-danger"> Cancel </a>
       <a class="button is-warning is-hidden"> Delete </a>
     </div>
-  </div>
+  </page>
 
-  <div id="sense" class="frame is-hidden">
+  <page id="sense">
     <div id="sense-title" class="bar barTop">
         <div> <svg style="height:1em;vertical-align:-.125em;display:inline-block;scale:1.1" viewBox="0 0 256 512"><path fill="currentColor" d="M31.7 239l136-136c9.4-9.4 24.6-9.4 33.9 0l22.6 22.6c9.4 9.4 9.4 24.6 0 33.9L127.9 256l96.4 96.4c9.4 9.4 9.4 24.6 0 33.9L201.7 409c-9.4 9.4-24.6 9.4-33.9 0l-136-136c-9.5-9.4-9.5-24.6-.1-34z"></path></svg> </div>
         <div> _ username _ </div>
@@ -76,7 +76,7 @@
     <div id="sense-results" class="is-hidden"> </div>
     <div id="sense-profile" class="bar barFooter"> _years old & height_ </div>
 
-  </div>
+  </page>
 
 </body>
 </html>
