@@ -1,5 +1,4 @@
 @font-face { font-family:'Ubuntu'; font-style:normal; font-weight:400; src: local('Ubuntu Regular'), url(assets/Ubuntu-Regular.ttf) format('truetype'); }
-@font-face { font-family:'Baloo Thambi 2'; font-style:normal; font-weight:600; src: local('Baloo Thambi 2 SemiBold'), url(assets/BalooThambi2-Bold.ttf) format('truetype'); }
 html, body { font-family: Ubuntu, Arial; touch-action: none; margin: 0; padding: 0; height: 100%; min-width: fit-content; overflow: hidden; }
 body { display: grid; grid-template: 1fr/1fr; }
 
@@ -7,7 +6,7 @@ page                  { height: 100%; display:grid; text-align:center; grid-area
 page:not(#background) { animation: 1s 0s slideIn cubic-bezier(0.42, 0, 0.4, 1.77) forwards }
 @keyframes slideIn { 0%{ transform:rotateY(90deg) translateX(50%) } 100%{ transform:rotateY(0deg) } }
 
-h1 { font-size:6vh; font-family:'Baloo Thambi 2', Arial; }
+h1 { font-size:6vh; font-weight:bold; }
 .main      { margin: auto 5vh; }
 .bar       { display: grid; background: #FFF; color: #238cd1; font-size: 3vh; }
 .barTop    { box-shadow: 0px 5px 5px #4443; align-self: end; }

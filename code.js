@@ -3,7 +3,7 @@
 const  $= _=> document.querySelector(_)
 const $$= _=> document.querySelectorAll(_)
 const log  = (...v)  => console.log( ...v )
-const msg  = { motivation:`This WebApp was made to demostrate how easy sometimes is to replace Native Apps.<br><br>If you don't own a Xiaomi Mi Composition Body Scale, close this window and run Demo to see how it feels.<br><br>Check this <a href='https://github.com/glococo/MyFit-PWA' rel="noopener" target='_blank'>site</a> to see requirements. (v0.942)`,
+const msg  = { motivation:`This WebApp was made to demostrate how easy sometimes is to replace Native Apps.<br><br>If you don't own a Xiaomi Mi Composition Body Scale, close this window and run Demo to see how it feels.<br><br>Check this <a href='https://github.com/glococo/MyFit-PWA' rel="noopener" target='_blank'>site</a> to see requirements. (v0.943)`,
              noBleSupport:`Sorry.<br>Your browser do not support requestLEScan API.<br><br>Check this <a href='https://github.com/glococo/MyFit-PWA' rel="noopener" target='_blank'>site</a> to see requirements.<br><br>If you don't own a Xiaomi Mi Composition Body Scale, close this window and run Demo to see how it feels.`,
              noBleAdapter:`Sorry.<br>There seems to be no Buetooth adapter or, you dont have BT or Location enabled or denied access to Web API. Location is a mandatory in some mobiles beside this app don't need that feature.` }
 var devScan, miUser, global={skinIndex:0}
@@ -213,7 +213,7 @@ function profilesDB( doSave ){
   let pwaStorage = window.localStorage
   let pwaProfiles = pwaStorage.getItem('profiles')
   if( doSave ) return pwaStorage.setItem('profiles', JSON.stringify(profiles) )
-  if( !pwaProfiles || !pwaProfiles.length ) {
+  if( !pwaProfiles || !JSON.parse(pwaProfiles).length ) {
     profiles.push( demo )
     populateProfileSelector()
     return pwaStorage.setItem( 'profiles', JSON.stringify(profiles) )
