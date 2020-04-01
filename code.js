@@ -3,12 +3,14 @@
 const  $= _=> document.querySelector(_)
 const $$= _=> document.querySelectorAll(_)
 const log  = (...v)  => console.log( ...v )
-const msg  = { motivation:`This WebApp was made to demostrate how easy sometimes is to replace Native Apps.<br><br>If you don't own a Xiaomi Mi Composition Body Scale, close this window and run Demo to see how it feels.<br><br>Check this <a href='https://github.com/glococo/MyFit-PWA' target='_blank'>site</a> to see requirements. (v0.91)`,
-             noBleSupport:`Sorry.<br>Your browser do not support requestLEScan API.<br><br>Check this <a href='https://github.com/glococo/MyFit-PWA' target='_blank'>site</a> to see requirements.<br><br>If you don't own a Xiaomi Mi Composition Body Scale, close this window and run Demo to see how it feels.`,
+const msg  = { motivation:`This WebApp was made to demostrate how easy sometimes is to replace Native Apps.<br><br>If you don't own a Xiaomi Mi Composition Body Scale, close this window and run Demo to see how it feels.<br><br>Check this <a href='https://github.com/glococo/MyFit-PWA' rel="noopener" target='_blank'>site</a> to see requirements. (v0.942)`,
+             noBleSupport:`Sorry.<br>Your browser do not support requestLEScan API.<br><br>Check this <a href='https://github.com/glococo/MyFit-PWA' rel="noopener" target='_blank'>site</a> to see requirements.<br><br>If you don't own a Xiaomi Mi Composition Body Scale, close this window and run Demo to see how it feels.`,
              noBleAdapter:`Sorry.<br>There seems to be no Buetooth adapter or, you dont have BT or Location enabled or denied access to Web API. Location is a mandatory in some mobiles beside this app don't need that feature.` }
 var devScan, miUser, global={skinIndex:0}
 const profiles = []
 const bgSkins  = [ ['#31c9d6', '#1a0f39'], ['#d6be31', '#e54202'], ['#1bcc2c', '#122a14'], ['#c4c4c4', '#272b32'] ]
+
+navigator.serviceWorker.register('/serviceworker.js').catch( _=> log('Error registering ServiceWorker') )
 window.addEventListener('DOMContentLoaded', init )
 
 function addEventListeners(){
@@ -204,7 +206,6 @@ function init() {
   if( !navigator.bluetooth || !navigator.bluetooth.requestLEScan )  return notification( msg.noBleSupport )
   navigator.bluetooth.addEventListener('advertisementreceived', e=> mibcsEvent(e) )
   displayPage( '#welcome' )
-  navigator.serviceWorker.register('serviceworker.js').catch( _=> log('Error registering ServiceWorker') )
   profilesDB()
 }
 function profilesDB( doSave ){
@@ -212,7 +213,7 @@ function profilesDB( doSave ){
   let pwaStorage = window.localStorage
   let pwaProfiles = pwaStorage.getItem('profiles')
   if( doSave ) return pwaStorage.setItem('profiles', JSON.stringify(profiles) )
-  if( !pwaProfiles ) {
+  if( !pwaProfiles || !pwaProfiles.length ) {
     profiles.push( demo )
     populateProfileSelector()
     return pwaStorage.setItem( 'profiles', JSON.stringify(profiles) )

@@ -8,6 +8,7 @@
   "theme_color": "#16486e",
   "start_url":".",
   "scope":"/",
+  "serviceworker": { "src": "serviceworker.js", "scope": "/" },
   "icons": [ { "src":"assets/myfit_192.png","type":"image/png","sizes":"192x192" },
              { "src":"assets/myfit_512.png","type":"image/png","sizes":"512x512" } ]
 }
