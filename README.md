@@ -59,6 +59,7 @@ You must be using Chrome 79+ with the chrome://flags/#enable-experimental-web-pl
 git clone https://github.com/glococo/MyFit-PWA.git
 and setup it in your hosting. Must use https.
 
+Check running source code -> [https://my-fit-pwa.now.sh/_src](https://my-fit-pwa.now.sh/_src)
 ## License
 Copyright (C) 2020 Guillermo Lo Coco
 
