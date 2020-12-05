@@ -1,4 +1,4 @@
-@font-face { font-family:'Ubuntu'; font-style:normal; font-weight:400; src: local('Ubuntu Regular'), url(assets/Ubuntu-Regular.ttf) format('truetype'); }
+@font-face { font-family: Ubuntu; font-style:normal; font-display:swap; font-weight:400; src: local('Ubuntu'), url(assets/Ubuntu-Regular.ttf) format('truetype'); }
 html, body { font-family: Ubuntu, Arial; touch-action: none; margin: 0; padding: 0; height: 100%; min-width: fit-content; overflow: hidden; }
 body { display: grid; grid-template: 1fr/1fr; }
 

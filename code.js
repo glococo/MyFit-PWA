@@ -3,7 +3,7 @@
 const  $= _=> document.querySelector(_)
 const $$= _=> document.querySelectorAll(_)
 const log  = (...v)  => console.log( ...v )
-const msg  = { motivation:`This WebApp was made to demostrate how easy sometimes is to replace Native Apps.<br><br>If you don't own a Xiaomi Mi Composition Body Scale, close this window and run Demo to see how it feels.<br><br>Check this <a href='https://github.com/glococo/MyFit-PWA' rel="noopener" target='_blank'>site</a> to see requirements. (v0.943)`,
+const msg  = { motivation:`This WebApp was made to demostrate how easy sometimes is to replace Native Apps.<br><br>If you don't own a Xiaomi Mi Composition Body Scale, close this window and run Demo to see how it feels.<br><br>Check this <a href='https://github.com/glococo/MyFit-PWA' rel="noopener" target='_blank'>site</a> to see requirements. (v0.945)`,
              noBleSupport:`Sorry.<br>Your browser do not support requestLEScan API.<br><br>Check this <a href='https://github.com/glococo/MyFit-PWA' rel="noopener" target='_blank'>site</a> to see requirements.<br><br>If you don't own a Xiaomi Mi Composition Body Scale, close this window and run Demo to see how it feels.`,
              noBleAdapter:`Sorry.<br>There seems to be no Buetooth adapter or, you dont have BT or Location enabled or denied access to Web API. Location is a mandatory in some mobiles beside this app don't need that feature.` }
 var devScan, miUser, global={skinIndex:0}
@@ -127,7 +127,7 @@ function launchSense() {
   weightActionButtons('start')
   displayPage('#sense')
   if( miUser.demo ) { miUser.demoLength=1; return runDemo() }
-  if( !devScan && navigator.bluetooth ) navigator.bluetooth.requestLEScan({ filters:[{name:'MIBCS'}] }).then( ble=> devScan=ble ).catch( e=> notification(msg.noBleAdapter) )
+  if( !devScan && navigator.bluetooth ) navigator.bluetooth.requestLEScan({ filters:[{name:'MIBCS'},{name:'MIBFS'}] }).then( ble=> devScan=ble ).catch( e=> notification(msg.noBleAdapter) )
 }
 function runDemo() {
   if( !demoData[miUser.demoLength] ) return
@@ -202,11 +202,10 @@ function init() {
   displayPage()
   drawRulerGuide()
   addEventListeners()
-  populateProfileSelector()
+  profilesDB()
+  displayPage( '#welcome' )
   if( !navigator.bluetooth || !navigator.bluetooth.requestLEScan )  return notification( msg.noBleSupport )
   navigator.bluetooth.addEventListener('advertisementreceived', e=> mibcsEvent(e) )
-  displayPage( '#welcome' )
-  profilesDB()
 }
 function profilesDB( doSave ){
   let demo= {name:'Demo User', sex:'Male', born:'1979-01-01', height:185, demo:true}
@@ -225,7 +224,7 @@ function profilesDB( doSave ){
 // [ 7:'Without weight', 6:'Invalid Date', 5:'Got Weight', 4:'Jin Unit', 3:'unknown', 2:'unknown', 1:'Got Composition', 0:'unknown' ]
 // ServiceData sample: [2, 164, 228, 7, 2, 14, 11, 0, 55, 253, 255, 40, 20]
 function mibcsEvent( event ){
-    if( event.name!='MIBCS' ) return
+    if( !['MIBCS','MIBFS'].includes(event.name) ) return
     let sData  = new Uint8Array( event.serviceData.get('0000181b-0000-1000-8000-00805f9b34fb').buffer )
     let date   = ((sData[3]<<8)+sData[2]) +"-"+ sData[4] +"-"+ sData[5] +" "+ sData[6] +":"+ sData[7] +":"+ sData[8]
     let weight = ( (sData[12]<<8) + sData[11] ) /200
